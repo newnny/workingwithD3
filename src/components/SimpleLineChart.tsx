@@ -23,6 +23,7 @@ interface AxisBottomProps {
 
 interface AxisLeftProps {
   scale: d3.ScaleLinear<number, number, never>;
+  transform: string;
 }
 
 interface LineProps {
@@ -44,7 +45,7 @@ export const AxisBottom = ({ scale, transform }: AxisBottomProps) => {
   return <g ref={ref} transform={transform} />;
 }
 
-export const AxisLeft = ({ scale }: AxisLeftProps) => {
+export const AxisLeft = ({ scale, transform }: AxisLeftProps) => {
   const ref = useRef<SVGGElement>(null);
 
   useEffect(() => {
@@ -53,7 +54,7 @@ export const AxisLeft = ({ scale }: AxisLeftProps) => {
     }
   }, [scale]);
 
-  return <g ref={ref} />;
+  return <g ref={ref} transform={transform}/>;
 }
 
 export const Line = ({ d, fill, stroke, strokeWidth }: LineProps) => {
@@ -62,7 +63,7 @@ export const Line = ({ d, fill, stroke, strokeWidth }: LineProps) => {
   )
 }
 
-export const SimpleLineChart = () => {
+export const SimpleLineChart: React.FC = () => {
   const [weatherData, setWeatherData] = useState<data[]>([])
 
   useEffect(() => {
@@ -101,41 +102,41 @@ export const SimpleLineChart = () => {
 
   let dimensions = {
     width: window.innerWidth * 0.9,
-    height: 500,
+    height: 400,
     margin: {
       top: 15,
       right: 15,
       bottom: 40,
-      left: 100,
+      left: 60,
     },
   }
-
-  let boundedWidth = dimensions.width - dimensions.margin.left - dimensions.margin.right
-
-  let boundedHeight = dimensions.height - dimensions.margin.top - dimensions.margin.bottom
 
   //create scales
   const yScale = d3.scaleLinear()
     .domain(d3.extent(weatherData, yAccessor) as [number, number])
-    .range([boundedHeight, 0])
+    .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
 
   const xScale = d3.scaleTime()
     .domain(d3.extent(weatherData, xAccessor) as [Date, Date])
-    .range([0, boundedWidth])
+    .range([dimensions.margin.left, dimensions.width-dimensions.margin.right])
 
   //Draw data
   const lineGenerator = d3.line<data>()
     .x(d => xScale(xAccessor(d) as Date))
     .y(d => yScale(yAccessor(d) as number))
 
+
+    //translate(): chracterized by a 2-dimensional vector and it defines how much the element moves in each direction
+    //translate(x, y) => x: R, y: B , translate(-x, -y) => -x: L, -y: T
+    //e.g.translate(10, 20): move to right side by 10px and move to bottom by 20px
   return (
     <svg
       width={dimensions.width}
       height={dimensions.height}
     >
       <g transform={`translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`}>
-        <AxisBottom scale={xScale} transform={`translateY(${boundedHeight}px)`} />
-        <AxisLeft scale={yScale} />
+        <AxisBottom scale={xScale} transform={`translate(0,${dimensions.height-dimensions.margin.bottom})`} />
+        <AxisLeft scale={yScale} transform={`translate(${dimensions.margin.left}, 0)`}/>
         <Line d={lineGenerator(weatherData)} fill="none" stroke="#ff7900" strokeWidth={1.5} />
       </g>
     </svg>

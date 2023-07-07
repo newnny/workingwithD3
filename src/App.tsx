@@ -1,21 +1,18 @@
-import React from 'react';
 import './App.css';
 
-import { Circle } from './components/test';
 import { SimpleLineChart } from './components/SimpleLineChart';
 
 function App() {
   return (
     <div className="App">
-      <p>
-        Working with d3
+      <p style={{fontSize: 30}}>
+        Working with d3.js
       </p>
 
-      <p>Test1: Circle</p>
-      <Circle />
-
-
-      <p>Simple line chart</p>
+      <p style={{textAlign: "left", padding: 20}}>
+        1. <b style={{fontSize: 20}}>Simple line chart</b> of Berlin highest temperature from 2020 to 2023 <br />
+        Sorce: <a href="https://open-meteo.com/" target="_blank">open-meteo</a>
+      </p>
       <SimpleLineChart />
     </div>
   );
