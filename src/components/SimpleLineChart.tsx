@@ -59,7 +59,7 @@ export const AxisLeft = ({ scale, transform }: AxisLeftProps) => {
 
 export const Line = ({ d, fill, stroke, strokeWidth }: LineProps) => {
   return (
-    <path d={d} fill={fill} stroke={stroke} stroke-width={strokeWidth} />
+    <path d={d} fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
   )
 }
 
