@@ -1,5 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as d3 from "d3";
+import Axis from './Axis';
+import Line from './Line';
 import rawWeatherData from "../data/berlin_weatehr.json"
 
 interface data {
@@ -14,53 +16,6 @@ interface data {
   precipitation_sum: number | undefined | null;
   windspeed_max: number | undefined | null;
   windgusts_max: number | undefined | null;
-}
-
-interface AxisBottomProps {
-  scale: d3.ScaleTime<number, number, never>
-  transform: string;
-}
-
-interface AxisLeftProps {
-  scale: d3.ScaleLinear<number, number, never>;
-  transform: string;
-}
-
-interface LineProps {
-  d: any;
-  fill: string;
-  stroke: string;
-  strokeWidth: number
-}
-
-export const AxisBottom = ({ scale, transform }: AxisBottomProps) => {
-  const ref = useRef<SVGGElement>(null);
-
-  useEffect(() => {
-    if (ref.current) {
-      d3.select(ref.current).call(d3.axisBottom(scale));
-    }
-  }, [scale]);
-
-  return <g ref={ref} transform={transform} />;
-}
-
-export const AxisLeft = ({ scale, transform }: AxisLeftProps) => {
-  const ref = useRef<SVGGElement>(null);
-
-  useEffect(() => {
-    if (ref.current) {
-      d3.select(ref.current).call(d3.axisLeft(scale));
-    }
-  }, [scale]);
-
-  return <g ref={ref} transform={transform}/>;
-}
-
-export const Line = ({ d, fill, stroke, strokeWidth }: LineProps) => {
-  return (
-    <path d={d} fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
-  )
 }
 
 export const SimpleLineChart: React.FC = () => {
@@ -114,11 +69,11 @@ export const SimpleLineChart: React.FC = () => {
   //create scales
   const yScale = d3.scaleLinear()
     .domain(d3.extent(weatherData, yAccessor) as [number, number])
-    .range([dimensions.height-dimensions.margin.bottom, dimensions.margin.top])
+    .range([dimensions.height - dimensions.margin.bottom, dimensions.margin.top])
 
   const xScale = d3.scaleTime()
     .domain(d3.extent(weatherData, xAccessor) as [Date, Date])
-    .range([dimensions.margin.left, dimensions.width-dimensions.margin.right])
+    .range([dimensions.margin.left, dimensions.width - dimensions.margin.right])
 
   //Draw data
   const lineGenerator = d3.line<data>()
@@ -126,17 +81,43 @@ export const SimpleLineChart: React.FC = () => {
     .y(d => yScale(yAccessor(d) as number))
 
 
-    //translate(): chracterized by a 2-dimensional vector and it defines how much the element moves in each direction
-    //translate(x, y) => x: R, y: B , translate(-x, -y) => -x: L, -y: T
-    //e.g.translate(10, 20): move to right side by 10px and move to bottom by 20px
+  //translate(): chracterized by a 2-dimensional vector and it defines how much the element moves in each direction
+  //translate(x, y) => x: R, y: B , translate(-x, -y) => -x: L, -y: T
+  //e.g.translate(10, 20): move to right side by 10px and move to bottom by 20px
   return (
     <svg
       width={dimensions.width}
       height={dimensions.height}
     >
       <g transform={`translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`}>
-        <AxisBottom scale={xScale} transform={`translate(0,${dimensions.height-dimensions.margin.bottom})`} />
-        <AxisLeft scale={yScale} transform={`translate(${dimensions.margin.left}, 0)`}/>
+        <Axis
+          position='bottom'
+          scale={undefined}
+          timeScale={xScale}
+          xTicks={10} 
+          yTicks={10}
+          transform={`translate(0,${dimensions.height - dimensions.margin.bottom})`}
+          x={(dimensions.width - dimensions.margin.left) / 2}
+          y={dimensions.margin.bottom}
+          text='Date'
+        />
+        <Axis
+          position='left'
+          scale={yScale}
+          timeScale={undefined}
+          xTicks={10} 
+          yTicks={10}
+          transform={`translate(${dimensions.margin.left}, 0)`}
+          x={-((dimensions.height - dimensions.margin.top - dimensions.margin.bottom) / 2)}
+          y={-dimensions.margin.left + 20}
+          text='The heigest temperature'
+        />
+        <rect
+          transform={`translate(${dimensions.margin.left}, 0)`}
+          width={dimensions.width - dimensions.margin.left - dimensions.margin.right}
+          height={dimensions.height - dimensions.margin.top - dimensions.margin.bottom + 10}
+          fill="lavender"
+        />
         <Line d={lineGenerator(weatherData)} fill="none" stroke="#ff7900" strokeWidth={1.5} />
       </g>
     </svg>
