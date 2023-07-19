@@ -1,46 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import * as d3 from 'd3';
 import Axis from './Axis';
+import usWeather from '../data/us_weather_data.json'
 
 interface Data {
-  index: number | undefined;
-  painting_index: number | undefined;
-  season: number | undefined;
-  episode: number | undefined;
-  num_colors: number | undefined;
-  colors: string | undefined;
-  color_hex: string | undefined;
-  Black_Gesso: number | undefined;
-  Bright_Red: number | undefined;
-  Burnt_Umber: number | undefined;
-  Cadmium_Yellow: number | undefined;
-  Dark_Sienna: number | undefined;
-  Indian_Red: number | undefined;
-  Indian_Yellow: number | undefined;
-  Liquid_Black: number | undefined;
-  Liquid_Clear: number | undefined;
-  Midnight_Black: number | undefined;
-  Phthalo_Blue: number | undefined;
-  Phthalo_Green: number | undefined;
-  Prussian_Blue: number | undefined;
-  Sap_Green: number | undefined;
-  Titanium_White: number | undefined;
-  Van_Dyke_Brown: number | undefined;
-  Yellow_Ochre: number | undefined;
-  Alizarin_Crimson: number | undefined;
-}
-
-interface DotsProps {
-  cx: any,
-  cy: any,
-  r: number,
-  fill: any,
-  tabindex: number,
-}
-
-export const Dots = ({ cx, cy, r, fill, tabindex }: DotsProps) => {
-  return <circle cx={cx} cy={cy} r={r} fill={fill} tabIndex={tabindex} />
-
+  time: number | undefined;
+  summary: string | undefined;
+  icon: string | undefined;
+  sunriseTime: number | undefined;
+  sunsetTime: number | undefined;
+  moonPhase: number | undefined;
+  precipIntensity: number | undefined;
+  precipIntensityMax: number | undefined;
+  precipProbability: number | undefined;
+  temperatureHigh: number | undefined;
+  temperatureHighTime: number | undefined;
+  temperatureLow?: number | undefined;
+  temperatureLowTime?: number | undefined;
+  apparentTemperatureHigh: number | undefined;
+  apparentTemperatureHighTime: number | undefined;
+  apparentTemperatureLow?: number | undefined;
+  apparentTemperatureLowTime?: number | undefined;
+  dewPoint: number | undefined;
+  humidity: number | undefined;
+  pressure: number | undefined;
+  windSpeed: number | undefined;
+  windGust: number | undefined;
+  windGustTime: number | undefined;
+  windBearing: number | undefined;
+  cloudCover: number | undefined;
+  uvIndex: number | undefined;
+  uvIndexTime: number | undefined;
+  visibility: number | undefined;
+  temperatureMin: number | undefined;
+  temperatureMinTime: number | undefined;
+  temperatureMax: number | undefined;
+  temperatureMaxTime: number | undefined;
+  apparentTemperatureMin: number | undefined;
+  apparentTemperatureMinTime: number | undefined;
+  apparentTemperatureMax: number | undefined;
+  apparentTemperatureMaxTime: number | undefined;
+  date: string | undefined;
 }
 
 interface Dimensions {
@@ -70,42 +70,21 @@ export const ScatterChart: React.FC = () => {
   //1. Access data
   useEffect(() => {
     const fetchData = async () => {
-      const rawData = await d3.csv('https://raw.githubusercontent.com/jwilber/Bob_Ross_Paintings/master/data/bob_ross_paintings.csv')
-      const formattedData = rawData.map((d, index) => ({
-        index: index + 1,
-        painting_index: Number(d.painting_index),
-        season: Number(d.season),
-        episode: Number(d.episode),
-        num_colors: Number(d.num_colors),
-        colors: d.colors,
-        color_hex: d.color_hex,
-        Black_Gesso: Number(d.Black_Gesso),
-        Bright_Red: Number(d.Bright_Red),
-        Burnt_Umber: Number(d.Burnt_Umber),
-        Cadmium_Yellow: Number(d.Cadmium_Yellow),
-        Dark_Sienna: Number(d.Dark_Sienna),
-        Indian_Red: Number(d.Indian_Red),
-        Indian_Yellow: Number(d.Indian_Yellow),
-        Liquid_Black: Number(d.Liquid_Black),
-        Liquid_Clear: Number(d.Liquid_Clear),
-        Midnight_Black: Number(d.Midnight_Black),
-        Phthalo_Blue: Number(d.Phthalo_Blue),
-        Phthalo_Green: Number(d.Phthalo_Green),
-        Prussian_Blue: Number(d.Prussian_Blue),
-        Sap_Green: Number(d.Sap_Green),
-        Titanium_White: Number(d.Titanium_White),
-        Van_Dyke_Brown: Number(d.Van_Dyke_Brown),
-        Yellow_Ochre: Number(d.Yellow_Ochre),
-        Alizarin_Crimson: Number(d.Alizarin_Crimson),
-      }))
-      setData(formattedData)
+      try {
+        const jsonData = await usWeather
+        if (jsonData && jsonData.length > 0) {
+          setData(jsonData)
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     }
     fetchData()
   }, [])
-  console.log(data, "data")
 
-  const xAccessor = (d: Data): number | undefined => d.num_colors
-  const yAccessor = (d: Data): number | undefined => d.Sap_Green
+  const xAccessor = (d: Data): number | undefined => d.dewPoint
+  const yAccessor = (d: Data): number | undefined => d.humidity
+  const colourAccessor = (d: Data): number | undefined => d.cloudCover
 
   //2. Create chart dimensions
   const width = d3.min([window.innerWidth * 0.8, window.innerHeight * 0.8])
@@ -137,6 +116,23 @@ export const ScatterChart: React.FC = () => {
       - dimensions.margin.top
       - dimensions.margin.bottom, 0])
     .nice()
+
+  const colourScale = data && d3.scaleLinear<string>()
+    .domain(d3.extent(data, colourAccessor) as [number, number])
+    .range(['#6495ed', '#0a0f18'])
+
+    const colourGenerator = (d: Data) => {
+      if (data) {
+        const colourValue = colourAccessor(d);
+          if (colourValue === undefined) {
+            throw new Error("colourValue is undefined");
+          }
+          if (colourScale === undefined) {
+            throw new Error("colourScale is undefined");
+          }
+          return colourScale(colourValue) as string;
+      }
+    }
 
   const cxyGenerator = (d: Data, x: boolean, y: boolean) => {
     if (data) {
@@ -173,7 +169,7 @@ export const ScatterChart: React.FC = () => {
         width={dimensions.width}
         height={dimensions.height}
       >
-        <g transform={`translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`}>
+        <g transform={`translate(${dimensions.margin.left}, ${dimensions.margin.top})`}>
           <>
             <Axis
               position='bottom'
@@ -184,7 +180,7 @@ export const ScatterChart: React.FC = () => {
               transform={`translate(${dimensions.margin.left},${dimensions.height - dimensions.margin.top - dimensions.margin.bottom})`}
               x={(dimensions.width - dimensions.margin.left - dimensions.margin.right) / 2}
               y={dimensions.margin.bottom}
-              text='The total number of used colour'
+              text='Dewpoint'
             />
             <Axis
               position='left'
@@ -195,15 +191,16 @@ export const ScatterChart: React.FC = () => {
               transform={`translate(${dimensions.margin.left}, 0)`}
               x={-((dimensions.height - dimensions.margin.top - dimensions.margin.bottom) / 2)}
               y={-dimensions.margin.left + 20}
-              text='The number of used special colour'
+              text='Humidity'
             />
             {data.map(d => {
               return (
                 <circle
+                key={d.time}
                   cx={cxyGenerator(d, true, false)}
                   cy={cxyGenerator(d, false, true)}
                   r={5}
-                  fill='#507d2a'
+                  fill={colourGenerator(d)}
                   tabIndex={0}
                 />)
             })}
