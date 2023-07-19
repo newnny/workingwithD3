@@ -89,7 +89,7 @@ export const SimpleLineChart: React.FC = () => {
       width={dimensions.width}
       height={dimensions.height}
     >
-      <g transform={`translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`}>
+      <g transform={`translate(${dimensions.margin.left}, ${dimensions.margin.top})`}>
         <Axis
           position='bottom'
           scale={undefined}
