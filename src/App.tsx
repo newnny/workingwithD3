@@ -2,6 +2,7 @@ import './App.css';
 
 import { SimpleLineChart } from './components/SimpleLineChart';
 import { ScatterChart } from './components/ScatterChart';
+import { ScatterBobRoss } from './components/ScatterBobRoss';
 
 function App() {
   return (
@@ -15,10 +16,22 @@ function App() {
         Sorce: <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">open-meteo</a>
       </p>
       <SimpleLineChart />
+      
+      <p style={{ textAlign: "left", padding: 20 }}>
+        2. <b style={{ fontSize: 20 }}>Simple Bar chart</b> <br />
+        Sorce: 
+      </p>
 
       <p style={{ textAlign: "left", padding: 20 }}>
-        2. <b style={{ fontSize: 20 }}>Simple scatter chart</b> of Bob ross painting <br />
+        3. <b style={{ fontSize: 20 }}>Simple scatter chart</b> of Bob ross painting <br />
+        compare the total number of colors Bob Ross used in his paintings to the number of unique colors.<br />
         Sorce: <a href="https://github.com/jwilber/Bob_Ross_Paintings" target="_blank" rel="noreferrer">Github Bob ross painting</a>
+      </p>
+      <ScatterBobRoss />
+      
+      <p style={{ textAlign: "left", padding: 20 }}>
+        4. <b style={{ fontSize: 20 }}>Simple scatter chart</b> of US weather data<br />
+        Sorce: Fullstack D3 Masterclass
       </p>
       <ScatterChart />
     </div>

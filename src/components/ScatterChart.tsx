@@ -105,7 +105,7 @@ export const ScatterChart: React.FC = () => {
   //.nice() method that will round our scale's domain, giving our axis friendlier bounds.
   const xScale = data && d3.scaleLinear()
     .domain(d3.extent(data, xAccessor) as [number, number])
-    .range([0, dimensions.width
+    .range([dimensions.margin.left, dimensions.width
       - dimensions.margin.left
       - dimensions.margin.right])
     .nice()
@@ -177,6 +177,8 @@ export const ScatterChart: React.FC = () => {
               timeScale={undefined}
               xTicks={10}
               yTicks={10}
+              width={-(dimensions.width - dimensions.margin.left - dimensions.margin.right)}
+              height={-(dimensions.height - dimensions.margin.top - dimensions.margin.bottom)}
               transform={`translate(${dimensions.margin.left},${dimensions.height - dimensions.margin.top - dimensions.margin.bottom})`}
               x={(dimensions.width - dimensions.margin.left - dimensions.margin.right) / 2}
               y={dimensions.margin.bottom}
@@ -188,6 +190,8 @@ export const ScatterChart: React.FC = () => {
               timeScale={undefined}
               xTicks={10}
               yTicks={10}
+              width={-(dimensions.width - dimensions.margin.left - dimensions.margin.right)}
+              height={-(dimensions.height - dimensions.margin.top - dimensions.margin.bottom)}
               transform={`translate(${dimensions.margin.left}, 0)`}
               x={-((dimensions.height - dimensions.margin.top - dimensions.margin.bottom) / 2)}
               y={-dimensions.margin.left + 20}

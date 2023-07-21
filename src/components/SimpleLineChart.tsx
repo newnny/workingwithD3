@@ -62,7 +62,7 @@ export const SimpleLineChart: React.FC = () => {
       top: 15,
       right: 15,
       bottom: 40,
-      left: 60,
+      left: 30,
     },
   }
 
@@ -90,12 +90,19 @@ export const SimpleLineChart: React.FC = () => {
       height={dimensions.height}
     >
       <g transform={`translate(${dimensions.margin.left}, ${dimensions.margin.top})`}>
+        <rect
+          transform={`translate(${dimensions.margin.left}, 0)`}
+          width={dimensions.width - dimensions.margin.left - dimensions.margin.right}
+          height={dimensions.height - dimensions.margin.top - dimensions.margin.bottom + 10}
+          fill="#faf8ff"
+        />
         <Axis
           position='bottom'
           scale={undefined}
           timeScale={xScale}
-          xTicks={10} 
-          yTicks={10}
+          xTicks={15}
+          width={-(dimensions.width - dimensions.margin.left - dimensions.margin.right)}
+          height={-(dimensions.height - dimensions.margin.top - dimensions.margin.bottom)}
           transform={`translate(0,${dimensions.height - dimensions.margin.bottom})`}
           x={(dimensions.width - dimensions.margin.left) / 2}
           y={dimensions.margin.bottom}
@@ -105,18 +112,13 @@ export const SimpleLineChart: React.FC = () => {
           position='left'
           scale={yScale}
           timeScale={undefined}
-          xTicks={10} 
-          yTicks={10}
+          yTicks={15}
+          width={-(dimensions.width - dimensions.margin.left - dimensions.margin.right)}
+          height={-(dimensions.height - dimensions.margin.top - dimensions.margin.bottom)}
           transform={`translate(${dimensions.margin.left}, 0)`}
           x={-((dimensions.height - dimensions.margin.top - dimensions.margin.bottom) / 2)}
-          y={-dimensions.margin.left + 20}
+          y={-dimensions.margin.left}
           text='The heigest temperature'
-        />
-        <rect
-          transform={`translate(${dimensions.margin.left}, 0)`}
-          width={dimensions.width - dimensions.margin.left - dimensions.margin.right}
-          height={dimensions.height - dimensions.margin.top - dimensions.margin.bottom + 10}
-          fill="lavender"
         />
         <Line d={lineGenerator(weatherData)} fill="none" stroke="#ff7900" strokeWidth={1.5} />
       </g>

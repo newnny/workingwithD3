@@ -9,26 +9,56 @@ interface AxisProps {
   x: number;
   y: number;
   text: string;
-  xTicks: number | undefined;
-  yTicks: number | undefined;
+  xTicks?: number | undefined;
+  yTicks?: number | undefined;
+  width?: number | undefined;
+  height?: number | undefined;
 }
 
-const Axis = ({ scale, timeScale, transform, position, x, y, text, xTicks, yTicks }: AxisProps) => {
+const Axis = ({ scale, timeScale, transform, position, x, y, text, xTicks, yTicks, width, height }: AxisProps) => {
   const ref = useRef<SVGGElement>(null);
 
   useEffect(() => {
     if (ref.current) {
       if (position === "bottom") {
         if (scale) {
-          d3.select(ref.current).call(d3.axisBottom(scale).ticks(xTicks));
+          d3.select(ref.current)
+            .call(d3.axisBottom(scale)
+              .ticks(xTicks) //how many ticks do you want to display in the chart
+              .tickSize(height!) //tick length //Use the non-null assertion operator (!) if you are certain that the value will not be undefined
+              .tickPadding(10) //tick padding from the chart bounds
+            )
+            .selectAll(".tick line")
+            .attr("stroke", "#bbbbbb");
         } else if (timeScale) {
-          d3.select(ref.current).call(d3.axisBottom(timeScale).ticks(xTicks));
+          d3.select(ref.current)
+            .call(d3.axisBottom(timeScale)
+              .ticks(xTicks)
+              .tickSize(height!)
+              .tickPadding(10)
+            )
+            .selectAll(".tick line")
+            .attr("stroke", "#bbbbbb");
         }
       } else if (position === "left") {
         if (scale) {
-          d3.select(ref.current).call(d3.axisLeft(scale).ticks(yTicks));
+          d3.select(ref.current)
+            .call(d3.axisLeft(scale)
+              .ticks(yTicks)
+              .tickSize(width!)
+              .tickPadding(10)
+            )
+            .selectAll(".tick line")
+            .attr("stroke", "#bbbbbb");
         } else if (timeScale) {
-          d3.select(ref.current).call(d3.axisLeft(timeScale).ticks(yTicks));
+          d3.select(ref.current)
+            .call(d3.axisLeft(timeScale)
+              .ticks(yTicks)
+              .tickSize(width!)
+              .tickPadding(10)
+            )
+            .selectAll(".tick line")
+            .attr("stroke", "#bbbbbb");
         }
       }
     }
