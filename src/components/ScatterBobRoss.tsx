@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import Axis from './Axis';
 import Dropdown from '../utils/Dropdown';
@@ -43,10 +43,13 @@ interface Dimensions {
 }
 
 export const ScatterBobRoss: React.FC = () => {
+  const initialRender = useRef(true);
   const [data, setData] = useState<Data[]>()
   const [selectedColour, setSelectedColour] = useState<string>("Sap Green")
   //assign a function type to a variable that is expecting a number
-  const [colourAccessor, setColourAccessor] = useState<(d: Data) => number | undefined>(() => undefined)
+  //it means a function that takes a Data object as input and returns either a number or undefined.
+  const [colourAccessor, setColourAccessor] = useState<(d: Data) => number | undefined>((d) => d && d.Sap_Green)
+  const [colourRange, setColourRange] = useState<string[]>([])
   const [dimensions, setDimensions] = useState<Dimensions>({
     width: 300,
     height: 300,
@@ -108,7 +111,6 @@ export const ScatterBobRoss: React.FC = () => {
   //Assuming parseColorArray is an array of arrays of strings, you can define its type as string[][]. Here's how you can do it:
   //const mergedArray = ogColors && ogColors.flatMap((c: string[]) => c)
   //const uniqueArray = mergedArray && mergedArray.filter((item: string, index: number) => mergedArray.indexOf(item) === index);
-  console.log(data, "data")
   const originalArray = data && data.length > 0 && data.map(d => d.colors).flatMap(c => c)
   const uniqueArray = originalArray && originalArray.filter((item, index) => originalArray.indexOf(item) === index);
 
@@ -116,91 +118,78 @@ export const ScatterBobRoss: React.FC = () => {
   const xAccessor = (d: Data): number | undefined => d.painting_index
 
   useEffect(() => {
-    const selectedColourAccessor = (d: Data) => {
-      if (selectedColour === "Alizarin Crimson") {
-        return (d.Alizarin_Crimson)
-      } else if (selectedColour === "Bright Red") {
-        return (d.Bright_Red)
-      } else if (selectedColour === "Cadmium Yellow") {
-        return (d.Cadmium_Yellow)
-      } else if (selectedColour === "Phthalo Green") {
-        return (d.Phthalo_Green)
-      } else if (selectedColour === "Prussian Blue") {
-        return (d.Prussian_Blue)
-      } else if (selectedColour === "Sap Green") {
-        return (d.Sap_Green)
-      } else if (selectedColour === "Titanium White") {
-        return (d.Titanium_White)
-      } else if (selectedColour === "Van Dyke Brown") {
-        return (d.Van_Dyke_Brown)
-      } else if (selectedColour === "Black Gesso") {
-        return (d.Black_Gesso)
-      } else if (selectedColour === "Burnt Umber") {
-        return (d.Burnt_Umber)
-      } else if (selectedColour === "Indian Yellow") {
-        return (d.Indian_Yellow)
-      } else if (selectedColour === "Phthalo Blue") {
-        return (d.Phthalo_Blue)
-      } else if (selectedColour === "Yellow Ochre") {
-        return (d.Yellow_Ochre)
-      } else if (selectedColour === "Liquid Black") {
-        return (d.Liquid_Black)
-      } else if (selectedColour === "Midnight Black") {
-        return (d.Midnight_Black)
-      } else if (selectedColour === "Liquid Clear") {
-        return (d.Liquid_Clear)
-      } else if (selectedColour === "Dark Sienna") {
-        return (d.Dark_Sienna)
-      } else if (selectedColour === "Indian Red") {
-        return (d.Indian_Red)
-      } else {
-        return undefined
-      }
+    //selectedColourAccessor is intended to be used as the new value for colourAccessor
+    //type of selectedColourAccessor has to match the expected type (d: Data) => number | undefined for colourAccessor.
+    const selectedColourAccessor = (): ((d: Data) => number | undefined) => {
+      const colours = selectedColour! && selectedColour === "Alizarin Crimson" ? (d: Data) => d && d.Alizarin_Crimson :
+        selectedColour === "Bright Red" ? (d: Data) => d && d.Bright_Red :
+          selectedColour === "Cadmium Yellow" ? (d: Data) => d && d.Cadmium_Yellow :
+            selectedColour === "Phthalo Green" ? (d: Data) => d && d.Phthalo_Green :
+              selectedColour === "Prussian Blue" ? (d: Data) => d && d.Prussian_Blue :
+                selectedColour === "Sap Green" ? (d: Data) => d && d.Sap_Green :
+                  selectedColour === "Titanium White" ? (d: Data) => d && d.Titanium_White :
+                    selectedColour === "Van Dyke Brown" ? (d: Data) => d && d.Van_Dyke_Brown :
+                      selectedColour === "Burnt Umber" ? (d: Data) => d && d.Burnt_Umber :
+                        selectedColour === "Indian Yellow" ? (d: Data) => d && d.Indian_Yellow :
+                          selectedColour === "Phthalo Blue" ? (d: Data) => d && d.Phthalo_Blue :
+                            selectedColour === "Yellow Ochre" ? (d: Data) => d && d.Yellow_Ochre :
+                              selectedColour === "Liquid Black" ? (d: Data) => d && d.Liquid_Black :
+                                selectedColour === "Midnight Black" ? (d: Data) => d && d.Midnight_Black :
+                                  selectedColour === "Liquid Clear" ? (d: Data) => d && d.Liquid_Clear :
+                                    selectedColour === "Dark Sienna" ? (d: Data) => d && d.Dark_Sienna : (d: Data) => d && d.Indian_Red
+      return colours;
     }
-    setColourAccessor(selectedColourAccessor)
-  },[selectedColour])
+    const colourFn = selectedColourAccessor
+    colourFn && setColourAccessor(colourFn);
+  }, [data, selectedColour])
 
-  const selectedColourRange = (selectedColour: string) => {
-    if (selectedColour === "Alizarin Crimson") {
-      return (['#e32636','#f7c2c7'])
-    } else if (selectedColour === "Bright Red") {
-      return (['#ff1414', '#ffc5c5'])
-    } else if (selectedColour === "Cadmium Yellow") {
-      return (['#fff714', '#fffcb1'])
-    } else if (selectedColour === "Phthalo Green") {
-      return (['#030906', '#ebf8f1'])
-    } else if (selectedColour === "Prussian Blue") {
-      return (['#003153', '#008ef0'])
-    } else if (selectedColour === "Sap Green") {
-      return (['#a7bd91', '#0A3410'])
-    } else if (selectedColour === "Titanium White") {
-      return (['#ffffff', '#858585'])
-    } else if (selectedColour === "Van Dyke Brown") {
-      return (['#a52a2a', '#f6e9e9'])
-    } else if (selectedColour === "Black Gesso") {
-      return (['#000000', '#e5e5e5'])
-    } else if (selectedColour === "Burnt Umber") {
-      return (['#8A3324', '#e7d6d3'])
-    } else if (selectedColour === "Indian Yellow") {
-      return (['#E3A857', '#f6e4cc'])
-    } else if (selectedColour === "Phthalo Blue") {
-      return (['#000F89', '#cccfe7'])
-    } else if (selectedColour === "Yellow Ochre") {
-      return (['#CB9D06', '#FDEFC4'])
-    } else if (selectedColour === "Liquid Black") {
-      return (['#000000', '#e5e5e5'])
-    } else if (selectedColour === "Midnight Black") {
-      return (['#000000', '#e5e5e5'])
-    } else if (selectedColour === "Liquid Clear") {
-      return (['ffffff', 'ffffff'])
-    } else if (selectedColour === "Dark Sienna") {
-      return (['#3c1414', '#b23b3b'])
-    } else if (selectedColour === "Indian Red") {
-      return (['#cd5c5c', '#f6e3e3'])
-    } else {
-      return (['ffffff', 'ffffff'])
+  useEffect(() => {
+    const selectedColourRange = () => {
+      if (selectedColour) {
+        if (selectedColour === "Alizarin Crimson") {
+          return (['#e32636', '#f7c2c7'])
+        } else if (selectedColour === "Bright Red") {
+          return (['#ff1414', '#ffc5c5'])
+        } else if (selectedColour === "Cadmium Yellow") {
+          return (['#fff714', '#fffcb1'])
+        } else if (selectedColour === "Phthalo Green") {
+          return (['#030906', '#ebf8f1'])
+        } else if (selectedColour === "Prussian Blue") {
+          return (['#003153', '#008ef0'])
+        } else if (selectedColour === "Sap Green") {
+          return (['#a7bd91', '#0A3410'])
+        } else if (selectedColour === "Titanium White") {
+          return (['#ffffff', '#858585'])
+        } else if (selectedColour === "Van Dyke Brown") {
+          return (['#a52a2a', '#f6e9e9'])
+        } else if (selectedColour === "Black Gesso") {
+          return (['#000000', '#e5e5e5'])
+        } else if (selectedColour === "Burnt Umber") {
+          return (['#8A3324', '#e7d6d3'])
+        } else if (selectedColour === "Indian Yellow") {
+          return (['#E3A857', '#f6e4cc'])
+        } else if (selectedColour === "Phthalo Blue") {
+          return (['#000F89', '#cccfe7'])
+        } else if (selectedColour === "Yellow Ochre") {
+          return (['#CB9D06', '#FDEFC4'])
+        } else if (selectedColour === "Liquid Black") {
+          return (['#000000', '#e5e5e5'])
+        } else if (selectedColour === "Midnight Black") {
+          return (['#000000', '#e5e5e5'])
+        } else if (selectedColour === "Liquid Clear") {
+          return (['ffffff', 'ffffff'])
+        } else if (selectedColour === "Dark Sienna") {
+          return (['#3c1414', '#b23b3b'])
+        } else if (selectedColour === "Indian Red") {
+          return (['#cd5c5c', '#f6e3e3'])
+        } else {
+          return (['ffffff', 'ffffff'])
+        }
+      }
+      return []
     }
-  }
+    setColourRange(selectedColourRange)
+  }, [selectedColour])
 
   //2. Create chart dimensions
   const width = d3.min([window.innerWidth * 0.8, window.innerHeight * 0.8])
@@ -233,12 +222,12 @@ export const ScatterBobRoss: React.FC = () => {
       - dimensions.margin.bottom, 0])
     .nice()
 
-  const colourScale = data && d3.scaleLinear<string>()
+  const colourScale = data && colourAccessor && d3.scaleLinear<string>()
     .domain(d3.extent(data, colourAccessor) as [number, number])
-    .range(selectedColourRange(selectedColour))
+    .range(colourRange)
 
   const colourGenerator = (d: Data) => {
-    if (data) {
+    if (data && colourAccessor) {
       const colourValue = colourAccessor(d);
       if (colourValue === undefined) {
         throw new Error("colourValue is undefined");
@@ -248,6 +237,7 @@ export const ScatterBobRoss: React.FC = () => {
       }
       return colourScale(colourValue) as string;
     }
+    return ""
   }
 
   const cxyGenerator = (d: Data, x: boolean, y: boolean) => {
@@ -274,6 +264,30 @@ export const ScatterBobRoss: React.FC = () => {
       }
     }
   }
+
+  const generateCircles = () => {
+    data && data.map(d => {
+      return (
+        <circle
+          key={d.index}
+          cx={cxyGenerator(d, true, false)}
+          cy={cxyGenerator(d, false, true)}
+          r={5}
+          fill={colourGenerator(d)}
+          tabIndex={0}
+        />
+      )
+    })
+  }
+
+  useEffect(() => {
+    //only run the function when the state value changes and not on the initial render
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      generateCircles()
+    }
+  }, [selectedColour, colourRange])
 
   //translate(): chracterized by a 2-dimensional vector and it defines how much the element moves in each direction
   //translate(x, y) => x: R, y: B , translate(-x, -y) => -x: L, -y: T
@@ -312,19 +326,9 @@ export const ScatterBobRoss: React.FC = () => {
                     transform={`translate(${dimensions.margin.left}, 0)`}
                     x={-((dimensions.height - dimensions.margin.top - dimensions.margin.bottom) / 2)}
                     y={-dimensions.margin.left + 20}
-                    text='The nubmer of special colour use'
+                    text={'The nubmer of total colour use'}
                   />
-                  {data.map(d => {
-                    return (
-                      <circle
-                        key={d.index}
-                        cx={cxyGenerator(d, true, false)}
-                        cy={cxyGenerator(d, false, true)}
-                        r={5}
-                        fill={colourGenerator(d)}
-                        tabIndex={0}
-                      />)
-                  })}
+                  {generateCircles()}
                 </>
               </g>
             </svg>
