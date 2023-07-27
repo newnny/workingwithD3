@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as d3 from 'd3';
 import Axis from './Axis';
 import Dropdown from '../utils/Dropdown';
@@ -43,7 +43,6 @@ interface Dimensions {
 }
 
 export const ScatterBobRoss: React.FC = () => {
-  const initialRender = useRef(true);
   const [data, setData] = useState<Data[]>()
   const [selectedColour, setSelectedColour] = useState<string>("Sap Green")
   //assign a function type to a variable that is expecting a number
@@ -265,30 +264,6 @@ export const ScatterBobRoss: React.FC = () => {
     }
   }
 
-  const generateCircles = () => {
-    data && data.map(d => {
-      return (
-        <circle
-          key={d.index}
-          cx={cxyGenerator(d, true, false)}
-          cy={cxyGenerator(d, false, true)}
-          r={5}
-          fill={colourGenerator(d)}
-          tabIndex={0}
-        />
-      )
-    })
-  }
-
-  useEffect(() => {
-    //only run the function when the state value changes and not on the initial render
-    if (initialRender.current) {
-      initialRender.current = false;
-    } else {
-      generateCircles()
-    }
-  }, [selectedColour, colourRange])
-
   //translate(): chracterized by a 2-dimensional vector and it defines how much the element moves in each direction
   //translate(x, y) => x: R, y: B , translate(-x, -y) => -x: L, -y: T
   //e.g.translate(10, 20): move to right side by 10px and move to bottom by 20px
@@ -328,7 +303,18 @@ export const ScatterBobRoss: React.FC = () => {
                     y={-dimensions.margin.left + 20}
                     text={'The nubmer of total colour use'}
                   />
-                  {generateCircles()}
+                  {data && data.map(d => {
+                      return (
+                        <circle
+                          key={d.index}
+                          cx={cxyGenerator(d, true, false)}
+                          cy={cxyGenerator(d, false, true)}
+                          r={5}
+                          fill={colourGenerator(d)}
+                          tabIndex={0}
+                        />
+                      )
+                    })}
                 </>
               </g>
             </svg>
