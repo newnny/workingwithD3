@@ -23,7 +23,7 @@ function App() {
       </p>
 
       <p style={{ textAlign: "left", padding: 20 }}>
-        3. <b style={{ fontSize: 20 }}>Simple scatter chart</b> of Bob ross painting <br />
+        3. <b style={{ fontSize: 20 }}>Scatter chart</b> of Bob ross painting with a dropdown<br />
         compare the total number of colors Bob Ross used in his paintings to the number of unique colors.<br />
         Sorce: <a href="https://github.com/jwilber/Bob_Ross_Paintings" target="_blank" rel="noreferrer">Github Bob ross painting</a>
       </p>

@@ -3,6 +3,8 @@ import * as d3 from 'd3';
 import Axis from './Axis';
 import Dropdown from '../utils/Dropdown';
 
+//ALAWYA MAKE SURE TO MATCH TYPE OF STATE AND FUNCTION RETURN VALUE
+
 interface Data {
   index: number | undefined;
   painting_index: number | undefined;
