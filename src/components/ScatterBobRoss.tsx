@@ -283,7 +283,8 @@ export const ScatterBobRoss: React.FC = () => {
                 <>
                   <Axis
                     position='bottom'
-                    scale={xScale}
+                    numScale={xScale}
+                    strScale={undefined}
                     timeScale={undefined}
                     xTicks={10}
                     width={-(dimensions.width - dimensions.margin.left - dimensions.margin.right)}
@@ -295,7 +296,8 @@ export const ScatterBobRoss: React.FC = () => {
                   />
                   <Axis
                     position='left'
-                    scale={yScale}
+                    numScale={yScale}
+                    strScale={undefined}
                     timeScale={undefined}
                     yTicks={10}
                     width={-(dimensions.width - dimensions.margin.left - dimensions.margin.right)}

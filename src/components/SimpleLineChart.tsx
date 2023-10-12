@@ -98,8 +98,9 @@ export const SimpleLineChart: React.FC = () => {
         />
         <Axis
           position='bottom'
-          scale={undefined}
+          numScale={undefined}
           timeScale={xScale}
+          strScale={undefined}
           xTicks={15}
           width={-(dimensions.width - dimensions.margin.left - dimensions.margin.right)}
           height={-(dimensions.height - dimensions.margin.top - dimensions.margin.bottom)}
@@ -110,7 +111,8 @@ export const SimpleLineChart: React.FC = () => {
         />
         <Axis
           position='left'
-          scale={yScale}
+          numScale={yScale}
+          strScale={undefined}
           timeScale={undefined}
           yTicks={15}
           width={-(dimensions.width - dimensions.margin.left - dimensions.margin.right)}

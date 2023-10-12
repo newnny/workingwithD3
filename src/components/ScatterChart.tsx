@@ -173,7 +173,8 @@ export const ScatterChart: React.FC = () => {
           <>
             <Axis
               position='bottom'
-              scale={xScale}
+              numScale={xScale}
+              strScale={undefined}
               timeScale={undefined}
               xTicks={10}
               yTicks={10}
@@ -186,7 +187,8 @@ export const ScatterChart: React.FC = () => {
             />
             <Axis
               position='left'
-              scale={yScale}
+              numScale={yScale}
+              strScale={undefined}
               timeScale={undefined}
               xTicks={10}
               yTicks={10}
