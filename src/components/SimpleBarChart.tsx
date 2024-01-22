@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import * as d3 from 'd3'
 import Axis from './Axis'
 import rawDogOwnershipData from "../data/dog_ownership.json"
@@ -10,9 +10,9 @@ interface data {
 }
 
 export const SimpleBarChar: React.FC = () => {
-  const [dogOwnershipData, setDogOwnershipData] = useState<data[]>(rawDogOwnershipData)
+  const dogOwnershipData: data[] = (rawDogOwnershipData)
 
-  const xAccessor = (d: data): string => d!.country
+  const xAccessor = (d: data): string => d && d.country
   const yAccessor = (d: data): number => d!.DogOwnershipTotalDogs2021 / 1000000
 
   let dimensions = {
